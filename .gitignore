@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
+instructions/
+screenshots/
+PROJECT_LOG.md
 
 # Build artifacts
 dist/

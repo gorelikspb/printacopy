@@ -3,6 +3,8 @@ node_modules/
 instructions/
 screenshots/
 PROJECT_LOG.md
+printacopy_log/
+AUTOMATION_LOG*.md
 
 # Build artifacts
 dist/

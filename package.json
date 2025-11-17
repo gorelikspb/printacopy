@@ -4,7 +4,8 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "capture:screens": "node scripts/capture-screenshots.js"
+    "capture:screens": "node instructions/scripts/capture-screenshots.js",
+    "serve": "npx http-server . -p 8080 -o"
   },
   "keywords": [],
   "author": "",

@@ -1,3 +1,43 @@
+// Language switching
+function setLanguage(lang) {
+    if (!translations[lang]) {
+        console.warn(`Language ${lang} not found, using 'ru'`);
+        lang = 'ru';
+    }
+    
+    const texts = translations[lang];
+    
+    // Update text content
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (texts[key]) {
+            el.textContent = texts[key];
+        }
+    });
+    
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (texts[key]) {
+            el.placeholder = texts[key];
+        }
+    });
+    
+    // Update file label default text
+    const fileLabel = document.querySelector('.file-label-text');
+    if (fileLabel && !document.getElementById('print-file').files[0]) {
+        fileLabel.textContent = texts.printFileLabel;
+    }
+    
+    // Update HTML lang attribute
+    document.documentElement.lang = lang;
+}
+
+// Check query parameter for language
+const urlParams = new URLSearchParams(window.location.search);
+const lang = urlParams.get('lang') || 'ru';
+setLanguage(lang);
+
 // Smooth scroll to section
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
@@ -28,7 +68,11 @@ document.getElementById('print-form').addEventListener('submit', function(e) {
     localStorage.setItem('printSubmissions', JSON.stringify(printSubmissions));
     
     // Show success message
-    alert(`Спасибо! Мы сообщим тебе на ${email}, когда появятся принтеры в ${city}.`);
+    const currentLang = urlParams.get('lang') || 'ru';
+    const message = translations[currentLang].printSuccess
+        .replace('{email}', email)
+        .replace('{city}', city);
+    alert(message);
     
     // Reset form
     this.reset();
@@ -58,7 +102,12 @@ document.getElementById('printer-form').addEventListener('submit', function(e) {
     localStorage.setItem('printerSubmissions', JSON.stringify(printerSubmissions));
     
     // Show success message
-    alert(`Спасибо, ${name}! Мы свяжемся с тобой на ${email}, когда появятся первые заявки в ${city}.`);
+    const currentLang = urlParams.get('lang') || 'ru';
+    const message = translations[currentLang].printerSuccess
+        .replace('{name}', name)
+        .replace('{email}', email)
+        .replace('{city}', city);
+    alert(message);
     
     // Reset form
     this.reset();
@@ -68,10 +117,11 @@ document.getElementById('printer-form').addEventListener('submit', function(e) {
 document.getElementById('print-file').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const label = document.querySelector('.file-label-text');
+    const currentLang = urlParams.get('lang') || 'ru';
     if (file) {
         label.textContent = `📎 ${file.name}`;
     } else {
-        label.textContent = '📎 Загрузить тестовый документ (опционально)';
+        label.textContent = translations[currentLang].printFileLabel;
     }
 });
 

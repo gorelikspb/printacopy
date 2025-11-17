@@ -10,11 +10,11 @@
     <!-- Блок 1: Хедер -->
     <header class="hero">
         <div class="container">
-            <h1 class="hero-title">Надо что-то распечатать рядом с домом?</h1>
-            <p class="hero-subtitle">Printacopy — люди делятся своими принтерами.</p>
+            <h1 class="hero-title" data-i18n="heroTitle">Надо что-то распечатать рядом с домом?</h1>
+            <p class="hero-subtitle" data-i18n="heroSubtitle">Printacopy — люди делятся своими принтерами.</p>
             <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="scrollToSection('print-section')">Мне нужно печатать</button>
-                <button class="btn btn-secondary" onclick="scrollToSection('printer-section')">У меня есть принтер</button>
+                <button class="btn btn-primary" onclick="scrollToSection('print-section')" data-i18n="btnPrint">Мне нужно печатать</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('printer-section')" data-i18n="btnPrinter">У меня есть принтер</button>
             </div>
         </div>
     </header>
@@ -22,38 +22,38 @@
     <!-- Блок 2: Для тех, кто ПЕЧАТАЕТ -->
     <section id="print-section" class="section print-section">
         <div class="container">
-            <h2 class="section-title">Для тех, кто печатает</h2>
+            <h2 class="section-title" data-i18n="printSectionTitle">Для тех, кто печатает</h2>
             <div class="features">
                 <div class="feature">
                     <div class="feature-icon">📍</div>
-                    <p>Найди ближайший принтер в районе</p>
+                    <p data-i18n="printFeature1">Найди ближайший принтер в районе</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">📄</div>
-                    <p>Загрузи PDF → получи цену → забери принт</p>
+                    <p data-i18n="printFeature2">Загрузи PDF → получи цену → забери принт</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">⚡</div>
-                    <p>Без регистрации, без похода в копицентр</p>
+                    <p data-i18n="printFeature3">Без регистрации, без похода в копицентр</p>
                 </div>
             </div>
             
             <div class="form-container">
-                <h3>Оставь e-mail, и мы скажем, когда появятся принтеры рядом с тобой</h3>
+                <h3 data-i18n="printFormTitle">Оставь e-mail, и мы скажем, когда появятся принтеры рядом с тобой</h3>
                 <form id="print-form" class="form">
                     <div class="form-group">
-                        <input type="text" id="print-city" placeholder="Город" required>
+                        <input type="text" id="print-city" data-i18n-placeholder="printCityPlaceholder" placeholder="Город" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="print-email" placeholder="E-mail" required>
+                        <input type="email" id="print-email" data-i18n-placeholder="printEmailPlaceholder" placeholder="E-mail" required>
                     </div>
                     <div class="form-group">
                         <input type="file" id="print-file" accept=".pdf,.doc,.docx" class="file-input">
                         <label for="print-file" class="file-label">
-                            <span class="file-label-text">📎 Загрузить тестовый документ (опционально)</span>
+                            <span class="file-label-text" data-i18n="printFileLabel">📎 Загрузить тестовый документ (опционально)</span>
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-large">Отправить</button>
+                    <button type="submit" class="btn btn-primary btn-large" data-i18n="btnSubmit">Отправить</button>
                 </form>
             </div>
         </div>
@@ -62,40 +62,40 @@
     <!-- Блок 3: Для владельцев ПРИНТЕРОВ -->
     <section id="printer-section" class="section printer-section">
         <div class="container">
-            <h2 class="section-title">У тебя уже есть принтер — пусть он зарабатывает</h2>
+            <h2 class="section-title" data-i18n="printerSectionTitle">У тебя уже есть принтер — пусть он зарабатывает</h2>
             <div class="features">
                 <div class="feature">
                     <div class="feature-icon">💰</div>
-                    <p>Получай оплаченные заявки на печать от людей рядом</p>
+                    <p data-i18n="printerFeature1">Получай оплаченные заявки на печать от людей рядом</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🎯</div>
-                    <p>Ты сам выбираешь цену за страницу</p>
+                    <p data-i18n="printerFeature2">Ты сам выбираешь цену за страницу</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🔄</div>
-                    <p>Ты можешь в любой момент отключиться</p>
+                    <p data-i18n="printerFeature3">Ты можешь в любой момент отключиться</p>
                 </div>
             </div>
             
             <div class="form-container">
                 <form id="printer-form" class="form">
                     <div class="form-group">
-                        <input type="text" id="printer-name" placeholder="Имя" required>
+                        <input type="text" id="printer-name" data-i18n-placeholder="printerNamePlaceholder" placeholder="Имя" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="printer-email" placeholder="E-mail" required>
+                        <input type="email" id="printer-email" data-i18n-placeholder="printerEmailPlaceholder" placeholder="E-mail" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="printer-city" placeholder="Город / район" required>
+                        <input type="text" id="printer-city" data-i18n-placeholder="printerCityPlaceholder" placeholder="Город / район" required>
                     </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="printer-color">
-                            <span>Есть ли цветной принтер?</span>
+                            <span data-i18n="printerColorCheckbox">Есть ли цветной принтер?</span>
                         </label>
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-large">Стать первым принтером в моём районе</button>
+                    <button type="submit" class="btn btn-secondary btn-large" data-i18n="btnPrinterSubmit">Стать первым принтером в моём районе</button>
                 </form>
             </div>
         </div>
@@ -104,27 +104,27 @@
     <!-- Блок 4: Как это будет работать -->
     <section class="section how-it-works">
         <div class="container">
-            <h2 class="section-title">Как это будет работать</h2>
+            <h2 class="section-title" data-i18n="howItWorksTitle">Как это будет работать</h2>
             <div class="workflow">
                 <div class="workflow-step">
                     <div class="step-number">1</div>
                     <div class="step-icon">📤</div>
-                    <h3>Пользователь загружает PDF</h3>
-                    <p>Выбирает ближайший принтер и отправляет документ</p>
+                    <h3 data-i18n="step1Title">Пользователь загружает PDF</h3>
+                    <p data-i18n="step1Desc">Выбирает ближайший принтер и отправляет документ</p>
                 </div>
                 <div class="workflow-arrow">→</div>
                 <div class="workflow-step">
                     <div class="step-number">2</div>
                     <div class="step-icon">✅</div>
-                    <h3>Ты принимаешь заказ</h3>
-                    <p>Получаешь уведомление и подтверждаешь заявку</p>
+                    <h3 data-i18n="step2Title">Ты принимаешь заказ</h3>
+                    <p data-i18n="step2Desc">Получаешь уведомление и подтверждаешь заявку</p>
                 </div>
                 <div class="workflow-arrow">→</div>
                 <div class="workflow-step">
                     <div class="step-number">3</div>
                     <div class="step-icon">🎉</div>
-                    <h3>Пользователь забирает распечатку и платит</h3>
-                    <p>Встречаетесь, передаёте документ, получаешь оплату</p>
+                    <h3 data-i18n="step3Title">Пользователь забирает распечатку и платит</h3>
+                    <p data-i18n="step3Desc">Встречаетесь, передаёте документ, получаешь оплату</p>
                 </div>
             </div>
         </div>
@@ -132,10 +132,11 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Printacopy. Все права защищены.</p>
+            <p data-i18n="footer">&copy; 2024 Printacopy. Все права защищены.</p>
         </div>
     </footer>
 
+    <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

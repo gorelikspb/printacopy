@@ -364,9 +364,15 @@ document.getElementById('print-form').addEventListener('submit', async function(
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     
+    // Get current language for button text
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    const sendingText = translations[currentLang]?.btnSending || 'Отправка...';
+    
     // Disable button during submission
     submitButton.disabled = true;
-    submitButton.textContent = 'Отправка...';
+    submitButton.textContent = sendingText;
     
     // Save to localStorage (for backup)
     const printData = {
@@ -382,9 +388,12 @@ document.getElementById('print-form').addEventListener('submit', async function(
     
     // Send email via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
-    const currentLang = urlParams.get('lang') || 'ru';
+    // Get current language from URL or localStorage or default to detected language
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
     
-    console.log('Отправка формы:', { type: 'user', email, city, fileName: file ? file.name : null });
+    console.log('Отправка формы:', { type: 'user', email, city, fileName: file ? file.name : null, currentLang });
     
     try {
         console.log('Отправка запроса на:', workerUrl);
@@ -409,14 +418,15 @@ document.getElementById('print-form').addEventListener('submit', async function(
         
         if (result.success) {
             // Show success message
-            const message = translations[currentLang].printSuccess
+            const message = (translations[currentLang]?.printSuccess || translations['de']?.printSuccess || 'Спасибо!')
                 .replace('{email}', email)
                 .replace('{city}', city);
             console.log('Успешно! Показываю сообщение:', message);
             alert(message);
         } else {
             console.error('Ошибка в ответе:', result);
-            alert('Ошибка отправки. Попробуй ещё раз.');
+            const errorMsg = translations[currentLang]?.printError || translations['de']?.printError || 'Ошибка отправки. Попробуй ещё раз.';
+            alert(errorMsg);
         }
     } catch (error) {
         console.error('Ошибка отправки:', error);
@@ -442,9 +452,15 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     
+    // Get current language for button text
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    const sendingText = translations[currentLang]?.btnSending || 'Отправка...';
+    
     // Disable button during submission
     submitButton.disabled = true;
-    submitButton.textContent = 'Отправка...';
+    submitButton.textContent = sendingText;
     
     // Save to localStorage (for backup)
     const printerData = {
@@ -461,9 +477,12 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     
     // Send email via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
-    const currentLang = urlParams.get('lang') || 'ru';
+    // Get current language from URL or localStorage or default to detected language
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
     
-    console.log('Отправка формы:', { type: 'printer', name, email, city, hasColor });
+    console.log('Отправка формы:', { type: 'printer', name, email, city, hasColor, currentLang });
     
     try {
         console.log('Отправка запроса на:', workerUrl);
@@ -489,7 +508,7 @@ document.getElementById('printer-form').addEventListener('submit', async functio
         
         if (result.success) {
             // Show success message
-            const message = translations[currentLang].printerSuccess
+            const message = (translations[currentLang]?.printerSuccess || translations['de']?.printerSuccess || 'Спасибо!')
                 .replace('{name}', name)
                 .replace('{email}', email)
                 .replace('{city}', city);
@@ -497,7 +516,8 @@ document.getElementById('printer-form').addEventListener('submit', async functio
             alert(message);
         } else {
             console.error('Ошибка в ответе:', result);
-            alert('Ошибка отправки. Попробуй ещё раз.');
+            const errorMsg = translations[currentLang]?.printerError || translations['de']?.printerError || 'Ошибка отправки. Попробуй ещё раз.';
+            alert(errorMsg);
         }
     } catch (error) {
         console.error('Ошибка отправки:', error);
@@ -516,7 +536,10 @@ document.getElementById('printer-form').addEventListener('submit', async functio
 document.getElementById('print-file').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const label = document.querySelector('.file-label-text');
-    const currentLang = urlParams.get('lang') || 'ru';
+    // Get current language from URL or localStorage or default to detected language
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
     if (file) {
         label.textContent = `📎 ${file.name}`;
     } else {
@@ -533,11 +556,14 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     const message = document.getElementById('contact-message').value;
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
-    const currentLang = urlParams.get('lang') || 'ru';
+    // Get current language from URL or localStorage or default to detected language
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
     
     // Disable button
     submitButton.disabled = true;
-    submitButton.textContent = translations[currentLang].contactSending || 'Отправка...';
+    submitButton.textContent = translations[currentLang]?.contactSending || 'Отправка...';
     
     // Send via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
@@ -560,10 +586,11 @@ document.getElementById('contact-form').addEventListener('submit', async functio
         submitButton.textContent = originalButtonText;
         
         if (result.success) {
-            alert(translations[currentLang].contactSuccess);
+            alert(translations[currentLang]?.contactSuccess || 'Спасибо! Мы ответим вам в ближайшее время.');
             this.reset();
         } else {
-            alert('Ошибка отправки. Попробуй ещё раз.');
+            const errorMsg = translations[currentLang]?.contactError || 'Ошибка отправки. Попробуй ещё раз.';
+            alert(errorMsg);
         }
     } catch (error) {
         console.error('Ошибка отправки:', error);

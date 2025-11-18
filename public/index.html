@@ -54,6 +54,7 @@
                     <div class="form-group">
                         <input type="text" id="print-city" data-i18n-placeholder="printCityPlaceholder" placeholder="Город" list="cities-list" autocomplete="off" required>
                         <datalist id="cities-list"></datalist>
+                        <small class="location-hint" data-i18n="cityLocationHint">📍 Мы используем приблизительную геолокацию, чтобы предлагать ближайшие принтеры. Можно ввести адрес вручную для более точных рекомендаций.</small>
                     </div>
                     <div class="form-group">
                         <input type="email" id="print-email" data-i18n-placeholder="printEmailPlaceholder" placeholder="E-mail" required>
@@ -99,6 +100,7 @@
                     </div>
                     <div class="form-group">
                         <input type="text" id="printer-city" data-i18n-placeholder="printerCityPlaceholder" placeholder="Город / район" list="cities-list" autocomplete="off" required>
+                        <small class="location-hint" data-i18n="printerCityLocationHint">📍 Мы используем приблизительную геолокацию, чтобы предлагать ближайшие принтеры. Можно ввести адрес вручную для более точных рекомендаций.</small>
                     </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
@@ -107,6 +109,7 @@
                         </label>
                     </div>
                     <button type="submit" class="btn btn-secondary btn-large" data-i18n="btnPrinterSubmit">Стать первым принтером в моём районе</button>
+                    <p class="form-note" data-i18n="printerFormNote" style="margin-top: 1rem; text-align: center; color: var(--text-light); font-size: 0.9rem;">Мы с вами свяжемся. Никакого риска, но дополнительный доход и польза для общества и экологии.</p>
                 </form>
             </div>
         </div>
@@ -137,6 +140,27 @@
                     <h3 data-i18n="step3Title">Пользователь забирает распечатку и платит</h3>
                     <p data-i18n="step3Desc">Встречаетесь, передаёте документ, получаешь оплату</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Контактная форма -->
+    <section class="section contact-section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contactFormTitle">Есть вопросы? Напишите нам</h2>
+            <div class="form-container">
+                <form id="contact-form" class="form">
+                    <div class="form-group">
+                        <input type="text" id="contact-name" data-i18n-placeholder="contactNamePlaceholder" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contact-email" data-i18n-placeholder="contactEmailPlaceholder" placeholder="Ваш e-mail" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contact-message" data-i18n-placeholder="contactMessagePlaceholder" placeholder="Ваш вопрос" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large" data-i18n="contactSubmit">Отправить вопрос</button>
+                </form>
             </div>
         </div>
     </section>

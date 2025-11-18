@@ -241,18 +241,31 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="email"] {
+.form-group input[type="email"],
+.form-group textarea {
     padding: 14px;
     font-size: 1rem;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     transition: border-color 0.3s ease;
+    font-family: inherit;
+    resize: vertical;
 }
 
 .form-group input[type="text"]:focus,
-.form-group input[type="email"]:focus {
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
+}
+
+.location-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.875rem;
+    color: var(--text-light);
+    line-height: 1.4;
+    text-align: center;
 }
 
 /* File Input */
@@ -371,6 +384,19 @@ body {
     color: white;
     text-align: center;
     padding: 2rem 20px;
+}
+
+.footer a {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer a:hover {
+    color: var(--secondary-color);
+}
+
+.contact-section {
+    background-color: var(--bg-light);
 }
 
 /* Responsive */

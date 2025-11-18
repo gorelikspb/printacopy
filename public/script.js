@@ -152,9 +152,138 @@ function initCitiesAutocomplete() {
         citiesList.appendChild(option);
     });
     
-    // Set default city to Konstanz
-    document.getElementById('print-city').value = 'Konstanz';
-    document.getElementById('printer-city').value = 'Konstanz';
+    // Don't set default value - let placeholder show example
+    // Value will be set by geolocation if available
+}
+
+// Get city from coordinates using reverse geocoding
+async function getCityFromCoordinates(lat, lng) {
+    try {
+        console.log('Fetching city from coordinates:', lat, lng);
+        // Use Nominatim (OpenStreetMap) for reverse geocoding - free, no API key needed
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+        console.log('Nominatim URL:', url);
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'Printacopy/1.0', // Nominatim requires User-Agent
+                'Accept': 'application/json'
+            }
+        });
+        
+        console.log('Nominatim response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Nominatim error response:', errorText);
+            throw new Error(`Geocoding failed: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Nominatim response data:', data);
+        
+        // Try to get full address or city
+        const city = data.address?.city || data.address?.town || data.address?.village || data.address?.municipality;
+        const street = data.address?.road || data.address?.street;
+        const houseNumber = data.address?.house_number;
+        
+        // Build address string
+        let addressParts = [];
+        if (city) addressParts.push(city);
+        if (street) addressParts.push(street);
+        if (houseNumber) addressParts.push(houseNumber);
+        
+        if (addressParts.length > 0) {
+            const fullAddress = addressParts.join(', ');
+            console.log('Full address from geocoding:', fullAddress);
+            return fullAddress;
+        }
+        
+        if (city) {
+            // Check if city is in our list (case-insensitive)
+            const normalizedCity = city.trim();
+            const foundCity = cities.find(c => c.toLowerCase() === normalizedCity.toLowerCase());
+            return foundCity || normalizedCity;
+        }
+        
+        return null;
+    } catch (error) {
+        console.log('Reverse geocoding error:', error);
+        return null;
+    }
+}
+
+// Request geolocation and set city (called on demand)
+let geolocationRequested = false;
+
+function requestGeolocationForInput(inputElement) {
+    // Only request if field is empty or has default value
+    const defaultValue = inputElement.value === 'Konstanz' || inputElement.value === 'Konstanz, Beispielstrasse 15' || !inputElement.value;
+    if (!defaultValue) {
+        console.log('Field already has value, skipping geolocation:', inputElement.value);
+        return;
+    }
+    
+    if (!navigator.geolocation) {
+        console.log('Geolocation not supported');
+        return;
+    }
+    
+    // Don't block if already requested - allow retry
+    if (geolocationRequested) {
+        console.log('Geolocation already requested, skipping duplicate request');
+        return;
+    }
+    
+    geolocationRequested = true;
+    console.log('Requesting geolocation...');
+    
+    // Request location (high accuracy, timeout 10s, cache 5min)
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            console.log('Location detected:', lat, lng);
+            
+            const city = await getCityFromCoordinates(lat, lng);
+            console.log('Geocoding result:', city);
+            if (city) {
+                // Format: if it's just a city (not full address), add ", " for user to continue typing
+                let cityValue = city;
+                // If city doesn't already contain comma (meaning it's just city name, not full address)
+                if (!city.includes(',')) {
+                    cityValue = city + ', ';
+                }
+                
+                // Auto-fill city in the current input (if still empty/default)
+                if (!inputElement.value || inputElement.value === 'Konstanz' || inputElement.value === 'Konstanz, Beispielstrasse 15') {
+                    inputElement.value = cityValue;
+                    // Move cursor to end after comma
+                    inputElement.setSelectionRange(cityValue.length, cityValue.length);
+                    console.log('City filled in input:', inputElement.id, cityValue);
+                }
+                
+                // Also fill the other form's city field if it's empty/default
+                const otherInputId = inputElement.id === 'print-city' ? 'printer-city' : 'print-city';
+                const otherInput = document.getElementById(otherInputId);
+                if (otherInput && (!otherInput.value || otherInput.value === 'Konstanz' || otherInput.value === 'Konstanz, Beispielstrasse 15')) {
+                    otherInput.value = cityValue;
+                    console.log('City filled in other input:', otherInputId, cityValue);
+                }
+            } else {
+                console.log('No city found from geocoding');
+            }
+        },
+        (error) => {
+            // Silently fail - user can enter city manually
+            geolocationRequested = false; // Allow retry on next focus
+        },
+        {
+            enableHighAccuracy: false, // Changed to false for faster response on localhost
+            timeout: 15000, // Increased to 15 seconds
+            maximumAge: 300000 // 5 minutes cache
+        }
+    );
 }
 
 // Initialize everything when DOM is ready
@@ -165,6 +294,48 @@ function initApp() {
     
     // Initialize cities autocomplete
     initCitiesAutocomplete();
+    
+    // Add geolocation request on city input focus (optional - fails silently)
+    const printCityInput = document.getElementById('print-city');
+    const printerCityInput = document.getElementById('printer-city');
+    
+    // Function to add comma and space after city if not present
+    function ensureCommaAfterCity(input) {
+        const value = input.value.trim();
+        if (value && !value.endsWith(',') && !value.endsWith(', ')) {
+            input.value = value + ', ';
+            // Move cursor to end
+            input.setSelectionRange(input.value.length, input.value.length);
+        }
+    }
+    
+    if (printCityInput) {
+        printCityInput.addEventListener('focus', function() {
+            requestGeolocationForInput(this);
+        });
+        // Add comma after city when user finishes typing (blur)
+        printCityInput.addEventListener('blur', function() {
+            ensureCommaAfterCity(this);
+        });
+        // Add comma when user selects from datalist
+        printCityInput.addEventListener('change', function() {
+            ensureCommaAfterCity(this);
+        });
+    }
+    
+    if (printerCityInput) {
+        printerCityInput.addEventListener('focus', function() {
+            requestGeolocationForInput(this);
+        });
+        // Add comma after city when user finishes typing (blur)
+        printerCityInput.addEventListener('blur', function() {
+            ensureCommaAfterCity(this);
+        });
+        // Add comma when user selects from datalist
+        printerCityInput.addEventListener('change', function() {
+            ensureCommaAfterCity(this);
+        });
+    }
 }
 
 if (document.readyState === 'loading') {
@@ -350,6 +521,55 @@ document.getElementById('print-file').addEventListener('change', function(e) {
         label.textContent = `📎 ${file.name}`;
     } else {
         label.textContent = translations[currentLang].printFileLabel;
+    }
+});
+
+// Handle contact form submission
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('contact-name').value;
+    const email = document.getElementById('contact-email').value;
+    const message = document.getElementById('contact-message').value;
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    const currentLang = urlParams.get('lang') || 'ru';
+    
+    // Disable button
+    submitButton.disabled = true;
+    submitButton.textContent = translations[currentLang].contactSending || 'Отправка...';
+    
+    // Send via Cloudflare Worker
+    const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
+    
+    try {
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'contact',
+                name: name,
+                email: email,
+                message: message
+            })
+        });
+        
+        const result = await response.json();
+        
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        
+        if (result.success) {
+            alert(translations[currentLang].contactSuccess);
+            this.reset();
+        } else {
+            alert('Ошибка отправки. Попробуй ещё раз.');
+        }
+    } catch (error) {
+        console.error('Ошибка отправки:', error);
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        alert('Ошибка отправки. Попробуй ещё раз.');
     }
 });
 

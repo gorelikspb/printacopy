@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Printacopy — Найди принтер рядом с домом</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Блок 1: Хедер -->
     <header class="hero">
         <div class="container">
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <select id="language-select" class="lang-select" onchange="switchLanguage(this.value)">
+                    <option value="de" data-lang="de">DE</option>
+                    <option value="en" data-lang="en">EN</option>
+                    <option value="ru" data-lang="ru">RU</option>
+                </select>
+            </div>
+            
             <h1 class="hero-title" data-i18n="heroTitle">Надо что-то распечатать рядом с домом?</h1>
             <p class="hero-subtitle" data-i18n="heroSubtitle">Printacopy — люди делятся своими принтерами.</p>
             <div class="hero-buttons">
@@ -137,12 +147,8 @@
         </div>
     </footer>
 
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    
     <script src="translations.js"></script>
     <script src="cities.js"></script>
-    <script src="emailjs-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

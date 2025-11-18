@@ -1,5 +1,6 @@
 const translations = {
   ru: {
+    pageTitle: "Printacopy — Найди принтер рядом с домом",
     heroTitle: "Надо что-то распечатать рядом с домом?",
     heroSubtitle: "Printacopy — люди делятся своими принтерами.",
     btnPrint: "Мне нужно печатать",
@@ -30,10 +31,11 @@ const translations = {
     step3Title: "Пользователь забирает распечатку и платит",
     step3Desc: "Встречаетесь, передаёте документ, получаешь оплату",
     footer: "© 2024 Printacopy. Все права защищены.",
-    printSuccess: "Спасибо! Мы сообщим тебе на {email}, когда появятся принтеры в {city}.",
-    printerSuccess: "Спасибо, {name}! Мы свяжемся с тобой на {email}, когда появятся первые заявки в {city}."
+    printSuccess: "Спасибо! Мы получили твой email и свяжемся с тобой, когда появятся принтеры в {city}.",
+    printerSuccess: "Спасибо, {name}! Мы получили твой email и свяжемся с тобой, когда появятся первые заявки в {city}."
   },
   en: {
+    pageTitle: "Printacopy — Find a printer near your home",
     heroTitle: "Need to print something near your home?",
     heroSubtitle: "Printacopy — people share their printers.",
     btnPrint: "I need to print",
@@ -64,10 +66,11 @@ const translations = {
     step3Title: "User picks up print and pays",
     step3Desc: "Meet up, hand over document, receive payment",
     footer: "© 2024 Printacopy. All rights reserved.",
-    printSuccess: "Thank you! We'll notify you at {email} when printers appear in {city}.",
-    printerSuccess: "Thank you, {name}! We'll contact you at {email} when the first requests appear in {city}."
+    printSuccess: "Thank you! We received your email and will contact you when printers appear in {city}.",
+    printerSuccess: "Thank you, {name}! We received your email and will contact you when the first requests appear in {city}."
   },
   de: {
+    pageTitle: "Printacopy — Finde einen Drucker in der Nähe",
     heroTitle: "Etwas in der Nähe drucken?",
     heroSubtitle: "Printacopy — Menschen teilen ihre Drucker.",
     btnPrint: "Ich muss drucken",
@@ -98,8 +101,8 @@ const translations = {
     step3Title: "Druck wird abgeholt und bezahlt",
     step3Desc: "Treffen, Dokument übergeben, Zahlung erhalten",
     footer: "© 2024 Printacopy. Alle Rechte vorbehalten.",
-    printSuccess: "Danke! Wir benachrichtigen dich unter {email}, wenn Drucker in {city} erscheinen.",
-    printerSuccess: "Danke, {name}! Wir kontaktieren dich unter {email}, wenn die ersten Anfragen in {city} erscheinen."
+    printSuccess: "Danke! Wir haben deine E-Mail erhalten und werden dich kontaktieren, wenn Drucker in {city} erscheinen.",
+    printerSuccess: "Danke, {name}! Wir haben deine E-Mail erhalten und werden dich kontaktieren, wenn die ersten Anfragen in {city} erscheinen."
   }
 };
 

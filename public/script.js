@@ -1,8 +1,8 @@
 // Language switching
 function setLanguage(lang) {
     if (!translations[lang]) {
-        console.warn(`Language ${lang} not found, using 'ru'`);
-        lang = 'ru';
+        console.warn(`Language ${lang} not found, using 'de'`);
+        lang = 'de';
     }
     
     const texts = translations[lang];
@@ -31,6 +31,116 @@ function setLanguage(lang) {
     
     // Update HTML lang attribute
     document.documentElement.lang = lang;
+    
+    // Update page title
+    if (texts.pageTitle) {
+        document.title = texts.pageTitle;
+    }
+    
+    // Update language select
+    const langSelect = document.getElementById('language-select');
+    if (langSelect) {
+        langSelect.value = lang;
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('preferredLanguage', lang);
+    
+    // Update URL without reload
+    const url = new URL(window.location);
+    url.searchParams.set('lang', lang);
+    window.history.replaceState({}, '', url);
+}
+
+// Switch language (called from button click)
+function switchLanguage(lang) {
+    setLanguage(lang);
+}
+
+// Get URL parameters (global, used in multiple places)
+const urlParams = new URLSearchParams(window.location.search);
+
+// Auto-detect language
+function detectLanguage() {
+    // 1. Check URL parameter first (highest priority)
+    const urlLang = urlParams.get('lang');
+    if (urlLang && translations[urlLang]) {
+        return urlLang;
+    }
+    
+    // 2. Check saved preference
+    const savedLang = localStorage.getItem('preferredLanguage');
+    if (savedLang && translations[savedLang]) {
+        return savedLang;
+    }
+    
+    // 3. Check browser language
+    const browserLang = navigator.language || navigator.userLanguage;
+    const browserLangCode = browserLang.split('-')[0].toLowerCase();
+    
+    // Map browser language to our supported languages
+    if (browserLangCode === 'de' || browserLangCode === 'de-ch' || browserLangCode === 'de-at') {
+        return 'de';
+    } else if (browserLangCode === 'en' || browserLangCode === 'en-us' || browserLangCode === 'en-gb') {
+        return 'en';
+    } else if (browserLangCode === 'ru' || browserLangCode === 'ru-ru') {
+        return 'ru';
+    }
+    
+    // 4. Try to detect by IP (optional, async)
+    detectLanguageByIP().then(ipLang => {
+        if (ipLang && translations[ipLang]) {
+            // Only use IP detection if no other method worked
+            if (!urlLang && !savedLang && !['de', 'en', 'ru'].includes(browserLangCode)) {
+                setLanguage(ipLang);
+            }
+        }
+    }).catch(() => {
+        // Ignore IP detection errors
+    });
+    
+    // 5. Default to German
+    return 'de';
+}
+
+// Detect language by IP (optional, uses free API)
+async function detectLanguageByIP() {
+    try {
+        // Using ipapi.co (free, no API key needed, 1000 requests/day)
+        const response = await fetch('https://ipapi.co/json/', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('IP detection failed');
+        }
+        
+        const data = await response.json();
+        const countryCode = data.country_code?.toLowerCase();
+        
+        // Map countries to languages
+        // German-speaking countries
+        if (['de', 'at', 'ch', 'li', 'lu'].includes(countryCode)) {
+            return 'de';
+        }
+        // English-speaking countries (major ones)
+        if (['us', 'gb', 'ie', 'au', 'nz', 'ca'].includes(countryCode)) {
+            return 'en';
+        }
+        // Russian-speaking countries
+        if (['ru', 'by', 'kz', 'kg', 'tj', 'uz', 'tm', 'md', 'ua'].includes(countryCode)) {
+            return 'ru';
+        }
+        
+        // Default to German for other countries
+        return 'de';
+    } catch (error) {
+        console.log('IP detection not available, using default');
+        return 'de';
+    }
 }
 
 // Initialize cities autocomplete
@@ -47,44 +157,23 @@ function initCitiesAutocomplete() {
     document.getElementById('printer-city').value = 'Konstanz';
 }
 
-// Check query parameter for language
-const urlParams = new URLSearchParams(window.location.search);
-const lang = urlParams.get('lang') || 'ru';
-setLanguage(lang);
-
-// Initialize cities when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCitiesAutocomplete);
-} else {
+// Initialize everything when DOM is ready
+function initApp() {
+    // Auto-detect and set language
+    const detectedLang = detectLanguage();
+    setLanguage(detectedLang);
+    
+    // Initialize cities autocomplete
     initCitiesAutocomplete();
 }
 
-// Initialize EmailJS
-function initEmailJS() {
-    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey !== 'YOUR_PUBLIC_KEY') {
-        emailjs.init(EMAILJS_CONFIG.publicKey);
-    }
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
 }
 
-// Send email via EmailJS
-async function sendEmail(templateId, templateParams) {
-    if (EMAILJS_CONFIG.publicKey === 'YOUR_PUBLIC_KEY') {
-        console.warn('EmailJS не настроен. Заполни emailjs-config.js');
-        return { success: false, error: 'EmailJS not configured' };
-    }
-    
-    try {
-        const response = await emailjs.send(
-            EMAILJS_CONFIG.serviceId,
-            templateId,
-            templateParams
-        );
-        return { success: true, response };
-    } catch (error) {
-        console.error('Ошибка отправки email:', error);
-        return { success: false, error };
-    }
-}
+// EmailJS removed - using Cloudflare Worker instead
 
 // Smooth scroll to section
 function scrollToSection(sectionId) {
@@ -108,7 +197,7 @@ document.getElementById('print-form').addEventListener('submit', async function(
     submitButton.disabled = true;
     submitButton.textContent = 'Отправка...';
     
-    // Save to localStorage (for demo purposes)
+    // Save to localStorage (for backup)
     const printData = {
         city: city,
         email: email,
@@ -116,42 +205,55 @@ document.getElementById('print-form').addEventListener('submit', async function(
         timestamp: new Date().toISOString()
     };
     
-    // Get existing data or create new array
     let printSubmissions = JSON.parse(localStorage.getItem('printSubmissions') || '[]');
     printSubmissions.push(printData);
     localStorage.setItem('printSubmissions', JSON.stringify(printSubmissions));
     
-    // Send emails via EmailJS
+    // Send email via Cloudflare Worker
+    const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
     const currentLang = urlParams.get('lang') || 'ru';
     
-    // 1. Send confirmation to user
-    const userEmailResult = await sendEmail(EMAILJS_CONFIG.templates.printConfirmation, {
-        to_email: email,
-        to_name: email.split('@')[0],
-        city: city,
-        language: currentLang,
-        reply_to: EMAILJS_CONFIG.adminEmail
-    });
+    console.log('Отправка формы:', { type: 'user', email, city, fileName: file ? file.name : null });
     
-    // 2. Send notification to admin
-    const adminEmailResult = await sendEmail(EMAILJS_CONFIG.templates.adminPrintNotification, {
-        to_email: EMAILJS_CONFIG.adminEmail,
-        user_email: email,
-        city: city,
-        has_file: file ? 'Да' : 'Нет',
-        file_name: file ? file.name : 'Нет файла',
-        timestamp: new Date().toLocaleString('ru-RU')
-    });
-    
-    // Re-enable button
-    submitButton.disabled = false;
-    submitButton.textContent = originalButtonText;
-    
-    // Show success message
-    const message = translations[currentLang].printSuccess
-        .replace('{email}', email)
-        .replace('{city}', city);
-    alert(message);
+    try {
+        console.log('Отправка запроса на:', workerUrl);
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'user',
+                email: email,
+                city: city,
+                fileName: file ? file.name : null
+            })
+        });
+        
+        console.log('Ответ получен, статус:', response.status);
+        const result = await response.json();
+        console.log('Результат:', result);
+        
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        
+        if (result.success) {
+            // Show success message
+            const message = translations[currentLang].printSuccess
+                .replace('{email}', email)
+                .replace('{city}', city);
+            console.log('Успешно! Показываю сообщение:', message);
+            alert(message);
+        } else {
+            console.error('Ошибка в ответе:', result);
+            alert('Ошибка отправки. Попробуй ещё раз.');
+        }
+    } catch (error) {
+        console.error('Ошибка отправки:', error);
+        console.error('Детали ошибки:', error.message, error.stack);
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        alert('Ошибка отправки. Попробуй ещё раз. Проверь консоль (F12) для деталей.');
+    }
     
     // Reset form (keep default city)
     this.reset();
@@ -173,7 +275,7 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     submitButton.disabled = true;
     submitButton.textContent = 'Отправка...';
     
-    // Save to localStorage (for demo purposes)
+    // Save to localStorage (for backup)
     const printerData = {
         name: name,
         email: email,
@@ -182,44 +284,57 @@ document.getElementById('printer-form').addEventListener('submit', async functio
         timestamp: new Date().toISOString()
     };
     
-    // Get existing data or create new array
     let printerSubmissions = JSON.parse(localStorage.getItem('printerSubmissions') || '[]');
     printerSubmissions.push(printerData);
     localStorage.setItem('printerSubmissions', JSON.stringify(printerSubmissions));
     
-    // Send emails via EmailJS
+    // Send email via Cloudflare Worker
+    const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
     const currentLang = urlParams.get('lang') || 'ru';
     
-    // 1. Send confirmation to printer owner
-    const userEmailResult = await sendEmail(EMAILJS_CONFIG.templates.printerConfirmation, {
-        to_email: email,
-        to_name: name,
-        city: city,
-        has_color_printer: hasColor ? 'Да' : 'Нет',
-        language: currentLang,
-        reply_to: EMAILJS_CONFIG.adminEmail
-    });
+    console.log('Отправка формы:', { type: 'printer', name, email, city, hasColor });
     
-    // 2. Send notification to admin
-    const adminEmailResult = await sendEmail(EMAILJS_CONFIG.templates.adminPrinterNotification, {
-        to_email: EMAILJS_CONFIG.adminEmail,
-        printer_name: name,
-        printer_email: email,
-        city: city,
-        has_color_printer: hasColor ? 'Да' : 'Нет',
-        timestamp: new Date().toLocaleString('ru-RU')
-    });
-    
-    // Re-enable button
-    submitButton.disabled = false;
-    submitButton.textContent = originalButtonText;
-    
-    // Show success message
-    const message = translations[currentLang].printerSuccess
-        .replace('{name}', name)
-        .replace('{email}', email)
-        .replace('{city}', city);
-    alert(message);
+    try {
+        console.log('Отправка запроса на:', workerUrl);
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'printer',
+                name: name,
+                email: email,
+                city: city,
+                hasColor: hasColor
+            })
+        });
+        
+        console.log('Ответ получен, статус:', response.status);
+        const result = await response.json();
+        console.log('Результат:', result);
+        
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        
+        if (result.success) {
+            // Show success message
+            const message = translations[currentLang].printerSuccess
+                .replace('{name}', name)
+                .replace('{email}', email)
+                .replace('{city}', city);
+            console.log('Успешно! Показываю сообщение:', message);
+            alert(message);
+        } else {
+            console.error('Ошибка в ответе:', result);
+            alert('Ошибка отправки. Попробуй ещё раз.');
+        }
+    } catch (error) {
+        console.error('Ошибка отправки:', error);
+        console.error('Детали ошибки:', error.message, error.stack);
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+        alert('Ошибка отправки. Попробуй ещё раз. Проверь консоль (F12) для деталей.');
+    }
     
     // Reset form (keep default city)
     this.reset();
@@ -238,11 +353,6 @@ document.getElementById('print-file').addEventListener('change', function(e) {
     }
 });
 
-// Initialize EmailJS when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initEmailJS);
-} else {
-    initEmailJS();
-}
+// EmailJS removed - using Cloudflare Worker instead
 
 

@@ -453,7 +453,7 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     
-    // Get current language for button text
+    // Get current language (used for button text and alerts)
     const currentLang = getCurrentLanguage();
     const sendingText = translations[currentLang]?.btnSending || 'Отправка...';
     
@@ -476,8 +476,6 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     
     // Send email via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
-    // Get current language
-    const currentLang = getCurrentLanguage();
     
     console.log('Отправка формы:', { type: 'printer', name, email, city, hasColor, currentLang });
     

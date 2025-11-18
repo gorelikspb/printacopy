@@ -60,6 +60,13 @@ function switchLanguage(lang) {
 // Get URL parameters (global, used in multiple places)
 const urlParams = new URLSearchParams(window.location.search);
 
+// Helper function to get current language
+function getCurrentLanguage() {
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    return urlLang || storedLang || document.documentElement.lang || 'de';
+}
+
 // Auto-detect language
 function detectLanguage() {
     // 1. Check URL parameter first (highest priority)
@@ -364,10 +371,8 @@ document.getElementById('print-form').addEventListener('submit', async function(
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     
-    // Get current language for button text
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    // Get current language (used for button text and alerts)
+    const currentLang = getCurrentLanguage();
     const sendingText = translations[currentLang]?.btnSending || 'Отправка...';
     
     // Disable button during submission
@@ -388,10 +393,6 @@ document.getElementById('print-form').addEventListener('submit', async function(
     
     // Send email via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
-    // Get current language from URL or localStorage or default to detected language
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
     
     console.log('Отправка формы:', { type: 'user', email, city, fileName: file ? file.name : null, currentLang });
     
@@ -453,9 +454,7 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     const originalButtonText = submitButton.textContent;
     
     // Get current language for button text
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    const currentLang = getCurrentLanguage();
     const sendingText = translations[currentLang]?.btnSending || 'Отправка...';
     
     // Disable button during submission
@@ -477,10 +476,8 @@ document.getElementById('printer-form').addEventListener('submit', async functio
     
     // Send email via Cloudflare Worker
     const workerUrl = 'https://printacopy.gorelikgo.workers.dev';
-    // Get current language from URL or localStorage or default to detected language
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    // Get current language
+    const currentLang = getCurrentLanguage();
     
     console.log('Отправка формы:', { type: 'printer', name, email, city, hasColor, currentLang });
     
@@ -536,10 +533,8 @@ document.getElementById('printer-form').addEventListener('submit', async functio
 document.getElementById('print-file').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const label = document.querySelector('.file-label-text');
-    // Get current language from URL or localStorage or default to detected language
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    // Get current language
+    const currentLang = getCurrentLanguage();
     if (file) {
         label.textContent = `📎 ${file.name}`;
     } else {
@@ -556,10 +551,8 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     const message = document.getElementById('contact-message').value;
     const submitButton = this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
-    // Get current language from URL or localStorage or default to detected language
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
-    const currentLang = urlLang || storedLang || document.documentElement.lang || 'de';
+    // Get current language
+    const currentLang = getCurrentLanguage();
     
     // Disable button
     submitButton.disabled = true;

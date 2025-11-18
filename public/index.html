@@ -42,7 +42,8 @@
                 <h3 data-i18n="printFormTitle">Оставь e-mail, и мы скажем, когда появятся принтеры рядом с тобой</h3>
                 <form id="print-form" class="form">
                     <div class="form-group">
-                        <input type="text" id="print-city" data-i18n-placeholder="printCityPlaceholder" placeholder="Город" required>
+                        <input type="text" id="print-city" data-i18n-placeholder="printCityPlaceholder" placeholder="Город" list="cities-list" autocomplete="off" required>
+                        <datalist id="cities-list"></datalist>
                     </div>
                     <div class="form-group">
                         <input type="email" id="print-email" data-i18n-placeholder="printEmailPlaceholder" placeholder="E-mail" required>
@@ -87,7 +88,7 @@
                         <input type="email" id="printer-email" data-i18n-placeholder="printerEmailPlaceholder" placeholder="E-mail" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="printer-city" data-i18n-placeholder="printerCityPlaceholder" placeholder="Город / район" required>
+                        <input type="text" id="printer-city" data-i18n-placeholder="printerCityPlaceholder" placeholder="Город / район" list="cities-list" autocomplete="off" required>
                     </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
@@ -136,7 +137,12 @@
         </div>
     </footer>
 
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <script src="translations.js"></script>
+    <script src="cities.js"></script>
+    <script src="emailjs-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
